@@ -1,0 +1,27 @@
+Subject: EVIDEX — Evidence Pack Delivered — {{ client.organization }} / {{ pack.project_name }}
+
+Hi {{ client.contact_name or "there" }},
+
+Attached is your completed **{{ invoice.service_name }}** for:
+- Purpose: {{ pack.purpose }}
+- Project: {{ pack.project_name }}
+- Reporting period: {{ pack.reporting_period.start }} to {{ pack.reporting_period.end }}
+
+Delivery includes:
+- Executive summary (2 pages)
+- Evidence table (KPI → proof → sources)
+- Narrative justification
+- Sources folder (audit trail)
+{% if pack.include_appendix %}- Appendix summaries
+{% endif %}
+
+Notes / flags:
+{% if flags %}{% for f in flags %}- {{ f }}
+{% endfor %}{% else %}- No material issues flagged.
+{% endif %}
+
+Invoice: {{ invoice.number }} ({{ invoice.currency }} {{ "%.2f"|format(invoice.total) }})
+Payment link/instructions: {{ vendor.payment_short }}
+
+Thanks,
+{{ vendor.name }}

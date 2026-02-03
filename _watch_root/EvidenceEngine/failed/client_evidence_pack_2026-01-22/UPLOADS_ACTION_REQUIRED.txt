@@ -1,0 +1,7 @@
+No files were attached via the Form.
+
+To fully automate uploads, add a Google Forms “File upload” question titled exactly:
+Upload files (PDF/DOCX/XLSX)
+
+Or provide a Google Drive folder link (not OneDrive) in the field:
+Upload folder link (Drive/OneDrive)

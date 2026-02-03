@@ -1,0 +1,28 @@
+QUALITY REPORT
+============
+
+Organization: 
+Project: 
+Purpose: 
+Period:  to 
+
+Coverage
+--------
+- Uploaded source files parsed: 11
+- KPIs in pack: 2
+- KPIs with matched evidence sources: 2 (100%)
+
+Flags
+-----
+- No material issues flagged.
+
+Urgency checklist
+-----------------
+- Confirm reporting period + deadline.
+- Ensure each KPI has at least one supporting source.
+- List known gaps and what to provide next.
+
+Next actions
+-----------
+- Confirm the pack purpose and any required template headings (donor/auditor/board).
+- Keep this report with the ZIP as an internal QA record.

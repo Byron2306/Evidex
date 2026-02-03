@@ -1,0 +1,1 @@
+NOTE: November supervisor summary is missing (mock gap for testing flags).

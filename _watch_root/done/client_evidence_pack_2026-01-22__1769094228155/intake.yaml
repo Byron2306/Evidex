@@ -1,0 +1,25 @@
+client:
+  organization: ""
+  contact_name: ""
+  contact_email: ""
+
+pack:
+  purpose: ""
+  donor: ""
+  project_name: ""
+  grant_id: ""
+  reporting_period:
+    start: ""
+    end: ""
+  tone: "neutral"
+  include_appendix: false
+
+kpis: []
+
+constraints:
+  avoid_claims: []
+  known_gaps: []
+
+billing:
+  client_type: "Corporate"
+  quantity: "1"

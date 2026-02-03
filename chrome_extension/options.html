@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Daily Outreach Helper — Options</title>
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; }
+      label { display: block; margin-top: 12px; font-weight: 600; }
+      input[type="text"], input[type="number"], textarea { width: 100%; padding: 10px; margin-top: 6px; }
+      textarea { min-height: 140px; }
+      .row { display: flex; gap: 12px; }
+      .row > div { flex: 1; }
+      .btn { margin-top: 16px; padding: 10px 14px; }
+      .hint { color: #555; font-size: 12px; }
+      .ok { color: #0a7; margin-left: 8px; }
+    </style>
+  </head>
+  <body>
+    <h1>Daily Outreach Helper</h1>
+    <p class="hint">This extension intentionally avoids “auto-posting” without your click, to keep things compliant and reduce account risk.</p>
+
+    <label>
+      <input id="enabled" type="checkbox" /> Enabled
+    </label>
+
+    <div class="row">
+      <div>
+        <label>Hour (local)</label>
+        <input id="hourLocal" type="number" min="0" max="23" />
+      </div>
+      <div>
+        <label>Minute (local)</label>
+        <input id="minuteLocal" type="number" min="0" max="59" />
+      </div>
+    </div>
+
+    <label>Post title (used for Reddit submit)</label>
+    <input id="title" type="text" />
+
+    <label>Post body</label>
+    <textarea id="body"></textarea>
+
+    <label>Reddit submit URL</label>
+    <input id="redditSubmitUrl" type="text" />
+    <div class="hint">Default: https://www.reddit.com/submit</div>
+
+    <label>LinkedIn URL</label>
+    <input id="linkedInUrl" type="text" />
+    <div class="hint">Default: https://www.linkedin.com/feed/</div>
+
+    <button class="btn" id="save">Save</button><span id="status" class="ok"></span>
+
+    <script src="options.js"></script>
+  </body>
+</html>

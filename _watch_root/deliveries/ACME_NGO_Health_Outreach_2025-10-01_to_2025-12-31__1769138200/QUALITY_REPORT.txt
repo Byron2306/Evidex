@@ -1,0 +1,29 @@
+QUALITY REPORT
+============
+
+Organization: ACME NGO
+Project: Health Outreach
+Purpose: Donor funding report
+Period: 2025-10-01 to 2025-12-31
+
+Coverage
+--------
+- Uploaded source files parsed: 10
+- KPIs in pack: 2
+- KPIs with matched evidence sources: 2 (100%)
+
+Flags
+-----
+- Known gap: Two supervisor summaries missing for November
+
+Urgency checklist
+-----------------
+- Match KPIs exactly to the donor logframe/template naming.
+- Ensure each KPI has evidence + a conservative narrative justification.
+- Flag missing months/documents early (so client can backfill).
+- Include finance summaries that tie to receipts/invoices where relevant.
+
+Next actions
+-----------
+- Confirm the pack purpose and any required template headings (donor/auditor/board).
+- Keep this report with the ZIP as an internal QA record.

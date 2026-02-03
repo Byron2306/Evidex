@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.venv/
+.env
+evidex.env
+output/
+*.zip
+
+# Google OAuth / API credentials (never commit)
+client_secret*.json
+credentials*.json
+token.json

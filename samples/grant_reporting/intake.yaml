@@ -1,0 +1,35 @@
+client:
+  organization: "Example Relief NGO"
+  contact_name: "Jordan"
+  contact_email: "jordan@example.org"
+
+pack:
+  purpose: "Donor funding report"
+  donor: "Example Foundation"
+  project_name: "Community Water Access"
+  grant_id: "EF-2025-119"
+  reporting_period:
+    start: "2025-07-01"
+    end: "2025-12-31"
+  tone: "donor-friendly"
+  include_appendix: true
+
+kpis:
+  - name: "Households reached with clean water"
+    target: 1200
+    actual: 980
+    measurement: "Distribution logs + field verification"
+  - name: "Water points rehabilitated"
+    target: 18
+    actual: 16
+    measurement: "Work completion certificates + photos"
+  - name: "Community trainings delivered"
+    target: 24
+    actual: 27
+    measurement: "Attendance sheets + facilitator reports"
+
+constraints:
+  avoid_claims:
+    - "Do not claim outcomes that are not directly measured"
+  known_gaps:
+    - "Two training attendance sheets missing for October"

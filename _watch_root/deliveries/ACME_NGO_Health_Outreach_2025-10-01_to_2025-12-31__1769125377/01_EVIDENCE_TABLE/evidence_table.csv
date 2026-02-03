@@ -1,0 +1,3 @@
+KPI,Target,Actual,Measurement,Evidence summary,Sources
+Clinics supported,12,11,Facility support logs + signed checklists,"Evidence found in kpi_sheet.csv, facility_support_checklists.docx supporting measurement: Facility support logs + signed checklists.",kpi_sheet.csv; facility_support_checklists.docx
+Households visited,1500,1420,Field visit forms + supervisor summaries,"Evidence found in kpi_sheet.csv, field_visit_forms.csv supporting measurement: Field visit forms + supervisor summaries.",kpi_sheet.csv; field_visit_forms.csv

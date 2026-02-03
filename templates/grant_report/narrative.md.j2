@@ -1,0 +1,24 @@
+# Narrative Justification — {{ pack.project_name }}
+
+## Overview
+This narrative summarizes progress against KPIs for the reporting period **{{ pack.reporting_period.start }} to {{ pack.reporting_period.end }}**.
+
+## Results against KPIs
+{% for row in evidence_rows %}
+### {{ loop.index }}. {{ row.kpi_name }}
+- Target: {{ row.target }}; Actual: {{ row.actual }}
+- Measurement: {{ row.measurement }}
+- Evidence summary: {{ row.evidence_summary }}
+- Key sources: {{ row.sources|join(", ") }}
+{% endfor %}
+
+## Data integrity & audit trail
+All referenced sources are copied into `03_SOURCES/` with filenames preserved. The evidence table links each KPI to source filenames.
+
+## Risks / flags
+{% if flags %}
+{% for f in flags %}- {{ f }}
+{% endfor %}
+{% else %}
+- No material issues flagged by the automated scan.
+{% endif %}

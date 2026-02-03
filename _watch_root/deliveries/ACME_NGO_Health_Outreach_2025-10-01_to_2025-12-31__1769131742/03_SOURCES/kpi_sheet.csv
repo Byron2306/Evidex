@@ -1,0 +1,3 @@
+kpi,target,actual,measurement,evidence
+Clinics supported,12,11,Facility support logs + signed checklists,facility_support_checklists.docx
+Households visited,1500,2039,Field visit forms + supervisor summaries,field_visit_forms.csv; supervisor_summary_october.txt; supervisor_summary_december.txt

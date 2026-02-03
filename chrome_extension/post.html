@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Post today</title>
+    <style>
+      body { font-family: system-ui, Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; }
+      pre { white-space: pre-wrap; background: #f6f7f8; padding: 12px; border-radius: 8px; }
+      .btn { padding: 10px 14px; margin-right: 10px; margin-top: 12px; }
+      .row { display: flex; flex-wrap: wrap; gap: 10px; }
+      .hint { color: #555; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>Today’s outreach</h1>
+    <p class="hint">Opens posting pages with prefilled content. You still click “Post” yourself.</p>
+
+    <h3>Title (Reddit)</h3>
+    <pre id="title"></pre>
+
+    <h3>Body</h3>
+    <pre id="body"></pre>
+
+    <div class="row">
+      <button class="btn" id="copy">Copy body</button>
+      <button class="btn" id="openReddit">Open Reddit submit</button>
+      <button class="btn" id="openLinkedIn">Open LinkedIn</button>
+      <a class="btn" href="options.html">Edit template</a>
+    </div>
+
+    <script src="post.js"></script>
+  </body>
+</html>

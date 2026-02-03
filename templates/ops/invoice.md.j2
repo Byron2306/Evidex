@@ -1,0 +1,27 @@
+# {{ vendor.name }} Invoice
+
+**From:** {{ vendor.name }}  
+**To:** {{ client.organization }}  
+**Attn:** {{ client.contact_name or "" }}  
+**Email:** {{ client.contact_email or "" }}  
+
+**Invoice #:** {{ invoice.number }}  
+**Date:** {{ invoice.date }}  
+**Due:** {{ invoice.due_date }}  
+
+## Service
+- **{{ invoice.service_name }}**
+- Purpose: {{ pack.purpose }}
+- Project: {{ pack.project_name }}
+- Reporting period: {{ pack.reporting_period.start }} to {{ pack.reporting_period.end }}
+
+## Amount due
+- Quantity: {{ invoice.quantity }}
+- Unit price: {{ invoice.currency }} {{ "%.2f"|format(invoice.unit_price) }}
+- **Total: {{ invoice.currency }} {{ "%.2f"|format(invoice.total) }}**
+
+## Payment
+{{ vendor.payment_instructions }}
+
+## Notes
+Confidential / white-label. No retention beyond delivery unless agreed.

@@ -1,0 +1,29 @@
+client:
+  organization: "ACME NGO"
+  contact_name: "Sam"
+  contact_email: "sam@acme.org"
+
+pack:
+  purpose: "Donor funding report"
+  donor: "ACME Foundation"
+  project_name: "Health Outreach"
+  grant_id: "ACME-2025-77"
+  reporting_period:
+    start: "2025-10-01"
+    end: "2025-12-31"
+  tone: "neutral"
+  include_appendix: true
+
+kpis:
+  - name: "Clinics supported"
+    target: 12
+    actual: 11
+    measurement: "Facility support logs + signed checklists"
+  - name: "Households visited"
+    target: 1500
+    actual: 1420
+    measurement: "Field visit forms + supervisor summaries"
+
+constraints:
+  known_gaps:
+    - "Two supervisor summaries missing for November"

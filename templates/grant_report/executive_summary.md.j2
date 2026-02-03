@@ -1,0 +1,31 @@
+# Executive Summary — Evidence Pack
+
+**Organization:** {{ client.organization }}  
+**Donor/Funder:** {{ pack.donor or "N/A" }}  
+**Project:** {{ pack.project_name }}  
+**Grant ID:** {{ pack.grant_id or "(not provided)" }}  
+**Reporting Period:** {{ pack.reporting_period.start }} to {{ pack.reporting_period.end }}
+
+## 1) Purpose
+This evidence pack was prepared to support **{{ pack.purpose }}** under time pressure. It consolidates KPI evidence, sources, and narrative justifications into an audit-ready structure.
+
+## 2) Coverage
+- KPIs included: {{ kpis|length }}
+- Source files reviewed: {{ source_count }}
+- Appendix summaries: {{ "Included" if pack.include_appendix else "Not included" }}
+
+## 3) KPI snapshot
+{% for k in kpis %}- {{ k.name }} — Target: {{ k.target }}, Actual: {{ k.actual }} ({{ k.measurement }})
+{% endfor %}
+
+## 4) Notes / constraints
+{% if constraints.known_gaps %}
+Known gaps:
+{% for g in constraints.known_gaps %}- {{ g }}
+{% endfor %}
+{% endif %}
+{% if constraints.avoid_claims %}
+Avoided claims:
+{% for a in constraints.avoid_claims %}- {{ a }}
+{% endfor %}
+{% endif %}

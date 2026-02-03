@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Evidence Pack Engine — Daily Outreach Helper",
+  "version": "0.1.0",
+  "description": "Once-a-day reminder + one-click helpers to post a single outreach message to Reddit/LinkedIn (user-confirmed).",
+  "permissions": ["storage", "alarms", "notifications"],
+  "host_permissions": ["https://www.reddit.com/*", "https://www.linkedin.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Daily Outreach"
+  },
+  "options_page": "options.html"
+}
