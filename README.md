@@ -241,3 +241,166 @@ See [docs/SETUP_CHECKLIST.md](docs/SETUP_CHECKLIST.md) for the full end-to-end i
 
 Local helper script (creates `_watch_root` folders and a starter `evidex.env`):
 - `powershell -ExecutionPolicy Bypass -File .\scripts\setup_local.ps1`
+
+---
+
+## Project structure
+
+```
+Evidex/
+├── src/
+│   └── evidence_pack_engine/   # Core Python package
+│       ├── cli.py              # CLI entry-point (generate / watch commands)
+│       ├── pack.py             # Pack assembly (ZIP builder)
+│       ├── ingest.py           # Document ingestion (PDF, XLSX, DOCX, images)
+│       ├── kpi_extract.py      # KPI/evidence extraction logic
+│       ├── render.py           # Jinja2-based document renderer
+│       ├── llm.py              # LLM integration (OpenAI / Ollama)
+│       ├── watcher.py          # Folder-watch automation
+│       ├── jobs.py             # Job lifecycle management
+│       ├── ops.py              # Invoice + delivery email generation
+│       ├── desktop.py          # Tkinter desktop UI
+│       ├── config.py           # Config + env-var loading
+│       └── envfile.py          # evidex.env parser
+├── _gas_project/               # Google Apps Script (deploy via clasp)
+│   ├── form_submit_to_drive_jobs.gs   # Form → Drive job folder
+│   ├── drive_delivery_emailer.gs      # Trigger delivery emails
+│   ├── paypal_web_app.gs              # PayPal payment webhook
+│   ├── evidex_config.gs               # Shared GAS config
+│   └── create_grant_reporting_form.gs # Programmatic form creation
+├── chrome_extension/           # Chrome outreach-helper extension
+├── docs/
+│   ├── SETUP_CHECKLIST.md      # End-to-end setup steps
+│   └── EMAIL_FLOW.md           # Email automation flow
+├── intake/
+│   └── grant_reporting_form_questions.md   # Google Form question template
+├── scripts/
+│   ├── setup_local.ps1         # Bootstraps watch-root and evidex.env
+│   ├── mock_data/              # Sample evidence generators
+│   └── marketing/              # Ad copy generators
+├── samples/
+│   └── grant_reporting/        # Sample intake.yaml + uploads for quick start
+├── assets/
+│   └── evidex_logo.png         # Logo used in the desktop UI
+├── requirements.txt
+└── evidex.env                  # (create this yourself — not committed)
+```
+
+## Prerequisites
+
+| Requirement | Version |
+|---|---|
+| Python | 3.10 or newer |
+| OS | Windows (desktop UI + watcher) — CLI also works on Linux/macOS |
+| Google account | Required for Forms/Drive automation |
+| Chrome | Required for outreach extension |
+
+## Installation (Linux / macOS)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Run the sample pack:
+
+```bash
+python -m evidence_pack_engine.cli generate \
+  --intake samples/grant_reporting/intake.yaml \
+  --uploads samples/grant_reporting/uploads \
+  --out output
+```
+
+## Chrome extension (outreach helper)
+
+The `chrome_extension/` folder contains a compliance-first daily outreach helper:
+- Schedules one reminder per day for posting to Reddit / LinkedIn
+- Opens posting pages with prefilled text — you still click **Post**
+- No account credentials stored; avoids brittle automation
+
+**Install:** Chrome → `chrome://extensions` → Developer mode → Load unpacked → select `chrome_extension/`
+
+Configure via the extension's **Options** page (daily time + template text).
+See [chrome_extension/README.md](chrome_extension/README.md) for full details.
+
+## Google Apps Script (GAS) project
+
+The `_gas_project/` folder contains Apps Script files managed via [clasp](https://github.com/google/clasp).
+
+| Script | Purpose |
+|---|---|
+| `form_submit_to_drive_jobs.gs` | On form submit: create `incoming/<job>/` folder + `intake.yaml` |
+| `drive_delivery_emailer.gs` | Watch `deliveries/` and email client when pack is ready |
+| `paypal_web_app.gs` | PayPal IPN webhook — writes `PAID.txt` to unblock watcher |
+| `create_grant_reporting_form.gs` | Auto-create the intake form in your Google account |
+| `evidex_config.gs` | Shared constants (folder IDs, email templates) |
+
+Deploy with clasp:
+```bash
+npm install -g @google/clasp
+clasp login
+cd _gas_project
+clasp push
+```
+
+## Environment variable reference
+
+All settings can be placed in `evidex.env` in the repo root (or at `$EVIDEX_ENV_PATH`).
+
+### Engine
+| Variable | Default | Description |
+|---|---|---|
+| `EVIDEX_WATCH_ROOT` | `_watch_root` | Root folder for the watcher |
+| `EVIDEX_ENV_PATH` | `evidex.env` | Path to the env file |
+| `REQUIRE_PAYMENT` | `0` | `1` = hold jobs until `PAID.txt` is present |
+
+### Billing / invoicing
+| Variable | Default | Description |
+|---|---|---|
+| `VENDOR_NAME` | — | Company name on invoices |
+| `PAYMENT_LINK` | — | Primary payment URL |
+| `PAYMENT_INSTRUCTIONS` | — | Free-text instructions on invoice |
+| `PAYMENT_SHORT` | — | Short label (e.g. "Pay via Stripe") |
+| `PAYPAL_LINK` | — | Optional PayPal.me link |
+| `PAYPAL_SHORT` | — | Short label for PayPal |
+| `INVOICE_CURRENCY` | `USD` | Currency code on invoices |
+| `UNIT_COST` | — | Cost per pack (used for profit estimation in dashboard) |
+
+### Pricing (per sector)
+| Variable | Default | Description |
+|---|---|---|
+| `SERVICE_NAME` | — | Global service name override |
+| `NGO_SERVICE_NAME` | — | NGO-specific service label |
+| `NGO_UNIT_PRICE` | `500` | Price per NGO pack (USD) |
+| `CORPORATE_SERVICE_NAME` | — | Corporate-specific label |
+| `CORPORATE_UNIT_PRICE` | `900` | Price per corporate pack (USD) |
+| `CONSULTANCY_SERVICE_NAME` | — | Reseller label |
+| `CONSULTANCY_UNIT_PRICE` | `400` | Price per reseller pack (USD) |
+
+### LLM
+| Variable | Default | Description |
+|---|---|---|
+| `LLM_DISABLED` | `0` | `1` = disable all LLM calls |
+| `OPENAI_API_KEY` | — | OpenAI key (not needed for local Ollama) |
+| `OPENAI_MODEL` | `gpt-4o-mini` | Model for hosted OpenAI |
+| `OPENAI_BASE_URL` | — | Custom OpenAI-compatible base URL |
+| `OLLAMA_BASE_URL` | — | e.g. `http://localhost:11434/v1` |
+| `OLLAMA_MODEL` | — | Default Ollama model |
+| `OLLAMA_MODEL_SUMMARY` | — | Ollama model for KPI summaries |
+| `OLLAMA_MODEL_NARRATIVE` | — | Ollama model for narrative text |
+| `LLM_MODEL_SUMMARY` | — | Alias for `OLLAMA_MODEL_SUMMARY` |
+| `LLM_MODEL_NARRATIVE` | — | Alias for `OLLAMA_MODEL_NARRATIVE` |
+| `SUMMARY_USE_LLM` | `1` | `0` = use heuristic summaries |
+| `NARRATIVE_USE_LLM` | `0` | `1` = use LLM for narrative |
+
+### Desktop UI
+| Variable | Default | Description |
+|---|---|---|
+| `EVIDEX_LOGO_PATH` | `assets/evidex_logo.png` | Path to logo PNG shown in UI |
+| `EVIDEX_EMAIL_IMAP_USER` | — | Gmail address for inbox monitoring |
+| `EVIDEX_EMAIL_IMAP_PASSWORD` | — | Gmail App Password |
+
+## License
+
+This project is proprietary. All rights reserved.
