@@ -2,6 +2,39 @@
 
 This repo generates a ready-to-submit **AI Evidence & Compliance Pack — 48-Hour Delivery** as a ZIP.
 
+## Novelty & market gap analysis
+
+### The problem with existing solutions
+
+Most compliance and audit-prep workflows today fall into one of two camps:
+
+| Category | Examples | Gap |
+|---|---|---|
+| **Generic document management** | SharePoint, Google Drive, Notion | Store files but produce no structured evidence artefact; auditor still does all mapping manually |
+| **Enterprise GRC platforms** | Vanta, Drata, Tugboat Logic | Built for recurring SaaS/SOC 2 compliance; assume a permanent licence, a tech company's control set, and months of onboarding — completely mis-sized for a one-off NGO grant closeout or a tax-season evidence sprint |
+| **Manual consulting** | Big-4 / boutique advisory | Expensive (>$5k/engagement), slow (weeks), and entirely labour-dependent; not packageable or resellable |
+| **LLM chat assistants** | ChatGPT, Copilot | Helpful for drafting text but have no file-ingestion pipeline, no structured output format, no invoice generation, and no folder-watch automation |
+
+### What Evidex does differently
+
+1. **Vertical + time-bound, not horizontal** — Evidex targets a specific deliverable (an evidence ZIP) in a specific timeframe (48 hours). This fixed scope is what makes it resellable and automatable, whereas horizontal platforms try to be everything.
+
+2. **Automation-first, not consultant-first** — The watcher + Google Form pipeline means a single operator can handle dozens of concurrent client jobs without proportional labour cost. Each job is an async file-drop, not a bespoke engagement.
+
+3. **Deterministic even without AI** — The engine produces a complete, correctly structured pack from heuristics alone. The LLM layer improves quality but is never a dependency. This removes the "black box" objection from auditors and removes API-cost risk for operators running at scale.
+
+4. **Reseller-native pricing model** — Multi-tier billing (NGO / Corporate / Consultancy), per-job `intake.yaml` overrides, batch quantities, and white-label service naming are all built in. No other tool in this category is designed to be resold.
+
+5. **Untapped segment: SME compliance deadlines** — The annual audit market for small-to-mid NGOs and SMEs is largely unaddressed by technology. Enterprise GRC is too expensive; manual consultants are too slow. The 48-hour, sub-$1k price point sits precisely in this gap.
+
+### Market sizing (indicative)
+
+- ~1.8M registered non-profits in the US alone, the majority of which file annual donor reports or undergo periodic audits.
+- The global compliance software market is projected at ~$65B by 2029 (Grand View Research, 2024), but >90% of that spend is enterprise-tier. The SME/NGO segment is structurally underserved.
+- Consultancy resellers represent a zero-CAC distribution channel: a single accountancy or M&E consultancy can bring 10–50 repeat clients.
+
+---
+
 ## Sector implemented (fast onboarding + high margin)
 **NGO / grant-funded programs (donor reporting + audits).**
 
