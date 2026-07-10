@@ -1,4 +1,10 @@
-# Evidence Pack Engine (Grant Reporting)
+# EVIDEX
+
+Evidence Pack Engine (Grant Reporting)
+
+<p align="center">
+  <img src="evidex.png" width="850" style="max-width: 92%; height: auto;">
+</p>
 
 This repo generates a ready-to-submit **AI Evidence & Compliance Pack — 48-Hour Delivery** as a ZIP.
 
