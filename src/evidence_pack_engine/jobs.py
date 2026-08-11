@@ -8,6 +8,11 @@ from pathlib import Path
 
 from .pack import load_intake, write_pack
 from .errors import TransientJobError, is_transient_file_error, with_retries
+from .epistemic_authority import (
+    HumanReviewRequired,
+    resume_pending_release,
+    stage_pending_release,
+)
 
 
 @dataclass(frozen=True)
@@ -120,6 +125,10 @@ def process_job(*, job_dir: Path, deliveries_dir: Path) -> Path:
         uploads/
           ...
     """
+    resumed = resume_pending_release(job_dir)
+    if resumed is not None:
+        return resumed
+
     if not is_job_ready(job_dir):
         reason = "missing intake.yaml or uploads/"
         if is_payment_required() and not is_job_paid(job_dir):
@@ -161,6 +170,20 @@ def process_job(*, job_dir: Path, deliveries_dir: Path) -> Path:
             shutil.copy2(email_src, email_dst)
     except Exception:
         pass
+
+    # Compilation is not delivery authority.
+    stage_pending_release(
+        job_dir=job_dir,
+        pack_root=pack_root,
+        zip_path=zip_path,
+    )
+    (job_dir / "NEEDS_HUMAN_REVIEW.txt").write_text(
+        "Pack compiled. Delivery is paused for evidence-authority and human review.\n",
+        encoding="utf-8",
+    )
+    raise HumanReviewRequired(
+        "Pack compiled and staged; human release decision required."
+    )
 
     # Convenience: drop the ZIP into the job folder (Drive-synced) so email/payment automations
     # can link to a single folder without needing to locate deliveries/.

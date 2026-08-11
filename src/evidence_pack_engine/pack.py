@@ -4,7 +4,7 @@ import json
 import os
 import shutil
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import time
 from pathlib import Path
 
@@ -16,6 +16,7 @@ from .ingest import IngestedDoc, ingest_uploads
 from .kpi_extract import extract_kpis_from_uploads
 from .llm import LlmClient, load_llm_config
 from .render import render_template
+from .epistemic_authority import evaluate_kpi_evidence, summarize_pack_authority
 
 
 @dataclass(frozen=True)
@@ -26,6 +27,10 @@ class EvidenceRow:
     measurement: str
     evidence_summary: str
     sources: list[str]
+    epistemic_state: str = "UNVERIFIED"
+    candidate_sources: list[str] = field(default_factory=list)
+    authorized_sources: list[str] = field(default_factory=list)
+    evidence_receipts: list[dict] = field(default_factory=list)
 
 
 def _quality_urgency_checklist(purpose: str) -> list[str]:
@@ -82,7 +87,10 @@ def _quality_urgency_checklist(purpose: str) -> list[str]:
 
 def _build_quality_report(*, intake: Intake, evidence_rows: list[EvidenceRow], docs: list[IngestedDoc], flags: list[str]) -> str:
     total_kpis = len(evidence_rows)
-    kpis_with_sources = sum(1 for r in evidence_rows if r.sources)
+    kpis_with_sources = sum(
+        1 for r in evidence_rows
+        if r.epistemic_state == "SUPPORTED" and r.sources
+    )
     coverage_pct = (100.0 * kpis_with_sources / total_kpis) if total_kpis else 0.0
     missing_kpis = [r.kpi_name for r in evidence_rows if not r.sources]
 
@@ -170,10 +178,13 @@ def build_evidence_rows(intake: Intake, docs: list[IngestedDoc], llm: LlmClient)
 
     for kpi in intake.kpis:
         scored = sorted((( _score_match(kpi, d), d) for d in docs), key=lambda x: x[0], reverse=True)
-        top = [d for s, d in scored if s > 0][:3]
+        authority = evaluate_kpi_evidence(kpi, scored)
+        authorized_names = set(authority.get("authorized_sources") or [])
+        top = [d for s, d in scored if d.path.name in authorized_names][:3]
         source_names = [d.path.name for d in top] if top else []
+        candidate_names = list(authority.get("candidate_sources") or [])
 
-        if summary_use_llm and llm.enabled and docs:
+        if summary_use_llm and llm.enabled and top:
             summary_model = os.getenv("LLM_MODEL_SUMMARY") or os.getenv("OPENAI_MODEL_SUMMARY") or os.getenv("OLLAMA_MODEL_SUMMARY")
             system = "You generate concise audit-ready evidence summaries."
             user = (
@@ -191,15 +202,15 @@ def build_evidence_rows(intake: Intake, docs: list[IngestedDoc], llm: LlmClient)
             summary = llm.complete(system=system, user=user, model=summary_model)
             if not summary:
                 if top:
-                    summary = f"Evidence found in {', '.join(source_names)} supporting measurement: {kpi.measurement}."
+                    summary = f"Source-bound evidence authorized in {', '.join(source_names)} for declared actual: {kpi.actual}."
                 else:
-                    summary = "No matching evidence found in uploaded sources; confirm missing documents or adjust KPI wording."
+                    summary = "No source-bound evidence is authorized for this KPI; candidate overlap, if any, remains unverified."
                     flags.append(f"Missing/weak evidence for KPI: {kpi.name}")
         else:
             if top:
-                summary = f"Evidence found in {', '.join(source_names)} supporting measurement: {kpi.measurement}."
+                summary = f"Source-bound evidence authorized in {', '.join(source_names)} for declared actual: {kpi.actual}."
             else:
-                summary = "No matching evidence found in uploaded sources; confirm missing documents or adjust KPI wording."
+                summary = "No source-bound evidence is authorized for this KPI; candidate overlap, if any, remains unverified."
                 flags.append(f"Missing/weak evidence for KPI: {kpi.name}")
 
         rows.append(
@@ -210,6 +221,16 @@ def build_evidence_rows(intake: Intake, docs: list[IngestedDoc], llm: LlmClient)
                 measurement=kpi.measurement,
                 evidence_summary=summary.strip(),
                 sources=source_names,
+                epistemic_state=str(
+                    authority.get("epistemic_state") or "UNVERIFIED"
+                ),
+                candidate_sources=candidate_names,
+                authorized_sources=list(
+                    authority.get("authorized_sources") or []
+                ),
+                evidence_receipts=list(
+                    authority.get("source_receipts") or []
+                ),
             )
         )
 
@@ -307,6 +328,17 @@ def write_pack(*, intake_path: Path, uploads_dir: Path, out_dir: Path, job_name:
     if intake.pack.include_appendix:
         (pack_root / "04_APPENDIX").mkdir(parents=True, exist_ok=True)
 
+    pack_authority = summarize_pack_authority(evidence_rows, flags)
+    (pack_root / "EPISTEMIC_AUTHORITY.json").write_text(
+        json.dumps(
+            pack_authority,
+            indent=2,
+            sort_keys=True,
+            ensure_ascii=False,
+        ) + "\n",
+        encoding="utf-8",
+    )
+
     # executive summary
     exec_md = render_template(
         templates_dir=templates_dir,
@@ -332,7 +364,13 @@ def write_pack(*, intake_path: Path, uploads_dir: Path, out_dir: Path, job_name:
                 "Actual": r.actual,
                 "Measurement": r.measurement,
                 "Evidence summary": r.evidence_summary,
+                "Epistemic state": r.epistemic_state,
                 "Sources": "; ".join(r.sources),
+                "Candidate sources": "; ".join(r.candidate_sources),
+                "Evidence receipts": json.dumps(
+                    r.evidence_receipts,
+                    ensure_ascii=False,
+                ),
             }
             for r in evidence_rows
         ]
@@ -359,7 +397,9 @@ def write_pack(*, intake_path: Path, uploads_dir: Path, out_dir: Path, job_name:
             "KPI rows (name, target, actual, measurement, evidence summary, sources):\n"
             + "\n".join(
                 f"- KPI: {r.kpi_name} | Target: {r.target} | Actual: {r.actual} | Measurement: {r.measurement} | "
-                f"Evidence: {r.evidence_summary} | Sources: {', '.join(r.sources) if r.sources else 'None'}"
+                f"Authority: {r.epistemic_state} | Evidence: {r.evidence_summary} | "
+                f"Authorized sources: {', '.join(r.sources) if r.sources else 'None'} | "
+                f"Candidate-only sources: {', '.join(r.candidate_sources) if r.candidate_sources else 'None'}"
                 for r in evidence_rows
             )
             + "\n\n"

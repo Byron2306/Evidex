@@ -12,6 +12,7 @@ from watchdog.observers import Observer
 
 from .errors import TransientJobError, with_retries
 from .jobs import is_job_ready, process_job
+from .epistemic_authority import HumanReviewRequired
 
 
 def _pid_is_alive(pid: int) -> bool:
@@ -245,8 +246,12 @@ class _Handler(FileSystemEventHandler):
             return
 
         for job_dir in children:
-            # Only retry jobs that explicitly asked for it.
-            if not (job_dir / "RETRY_LATER.txt").exists():
+            retry_ready = (job_dir / "RETRY_LATER.txt").exists()
+            human_release_ready = (
+                (job_dir / "NEEDS_HUMAN_REVIEW.txt").exists()
+                and (job_dir / "HUMAN_DECISION_READY.txt").exists()
+            )
+            if not (retry_ready or human_release_ready):
                 continue
 
             with self._lock:
@@ -402,6 +407,18 @@ def _run_job_once_inner(*, job_dir: Path, cfg: WatchConfig, seen_set: set[Path] 
 
         # Success path: ensure we do not leave ERROR/RETRY_LATER behind in done.
         _clear_job_markers(done)
+    except HumanReviewRequired as e:
+        try:
+            (processing / "NEEDS_HUMAN_REVIEW.txt").write_text(
+                str(e) + "\n",
+                encoding="utf-8",
+            )
+        except Exception:
+            pass
+        if seen_set is not None and seen_lock is not None:
+            with seen_lock:
+                seen_set.discard(processing)
+        return
     except TransientJobError as e:
         # If a deliverable already exists, treat the job as complete.
         # This handles cases where a later retry fails during cleanup (e.g., locked deliveries/ folder)
