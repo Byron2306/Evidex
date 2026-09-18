@@ -1,0 +1,37 @@
+name: Evidex Phase 9 Ollama Sovereignty
+
+on:
+  push:
+    branches:
+      - agent/evidex-phase9-ollama-sovereign
+  pull_request:
+    paths:
+      - 'src/evidence_pack_engine/llm.py'
+      - '.github/workflows/phase9-ollama-sovereign.yml'
+
+jobs:
+  sovereign-llm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile Evidex local LLM layer
+        run: python -m py_compile src/evidence_pack_engine/llm.py
+      - name: Prove cloud OpenAI environment is ignored
+        env:
+          OPENAI_API_KEY: SHOULD_NOT_BE_USED
+          OPENAI_BASE_URL: https://api.openai.com/v1
+          OPENAI_MODEL: gpt-cloud-should-not-be-used
+        run: |
+          PYTHONPATH=src python - <<'PY'
+          from evidence_pack_engine.llm import load_llm_config
+          cfg=load_llm_config()
+          assert cfg.base_url=="http://127.0.0.1:11434/v1", cfg
+          assert cfg.model=="qwen2.5:3b", cfg
+          assert cfg.api_key=="ollama-local", cfg
+          print("EVIDEX_ACTIVE_LLM_PROVIDER=ollama")
+          print("EVIDEX_CLOUD_LLM_RUNTIME_CALLS=0")
+          print("EVIDEX_PHASE9_OLLAMA_SOVEREIGN_VERIFIED")
+          PY
