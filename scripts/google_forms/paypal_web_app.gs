@@ -79,7 +79,7 @@ function _ppRequireProp_(name) {
 
 function _ppLog_(name, text) {
   try {
-    var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '').trim();
+    var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '1H6XjbN-3ovuJhLv75TZ9foO0ZMk8EVUL').trim();
     if (!rootId) {
       Logger.log('PayPal webhook log (no root configured): ' + name + ' :: ' + text);
       return;
@@ -400,7 +400,7 @@ function _pfHandleItn_(e, rawBody) {
     var jobFolder = DriveApp.getFolderById(jobFolderId);
 
     // Safety: only allow marking folders under our configured root.
-    var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '').trim();
+    var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '1H6XjbN-3ovuJhLv75TZ9foO0ZMk8EVUL').trim();
     if (rootId && !_ppIsUnderRoot_(jobFolder, rootId)) {
       _ppLog_('error', 'Refusing to mark folder not under root (PayFast). jobFolderId=' + jobFolderId + ' rootId=' + rootId);
       return;
@@ -500,7 +500,7 @@ function _ppHandleEvent_(event) {
   var jobFolder = DriveApp.getFolderById(jobFolderId);
 
   // Safety: only allow marking folders under our configured root.
-  var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '').trim();
+  var rootId = String(PropertiesService.getScriptProperties().getProperty('EVIDENCE_ENGINE_ROOT_FOLDER_ID') || '1H6XjbN-3ovuJhLv75TZ9foO0ZMk8EVUL').trim();
   if (rootId && !_ppIsUnderRoot_(jobFolder, rootId)) {
     _ppLog_('error', 'Refusing to mark folder not under root. jobFolderId=' + jobFolderId + ' rootId=' + rootId);
     return;

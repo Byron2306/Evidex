@@ -25,8 +25,8 @@
  */
 
 // REQUIRED: set these.
-var FORM_ID = '1FAIpQLSf5aux5aHI0dSbZQHiPQCxX6i--w0BZ-iVC7gONNgla7lqNPw';
-var EVIDENCE_ENGINE_ROOT_FOLDER_ID = '1idb7x7NKJF2YrS_DXEqYvkIFMa6JfWa5';
+var FORM_ID = '19h-WPwMZG4FeAItfq0Zk1NhbtfwMxwqBQNnNXmuCiQ4';
+var EVIDENCE_ENGINE_ROOT_FOLDER_ID = '1H6XjbN-3ovuJhLv75TZ9foO0ZMk8EVUL';
 
 // Optional: customize.
 var INCOMING_SUBFOLDER_NAME = 'incoming';
@@ -183,6 +183,17 @@ function getOpsEmail_() {
 
 function setupTrigger() {
   var formId = _fsRequiredConfig_('FORM_ID', FORM_ID);
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    var t = triggers[i];
+    try {
+      if (t.getHandlerFunction && t.getHandlerFunction() === 'onFormSubmit') {
+        ScriptApp.deleteTrigger(t);
+      }
+    } catch (e) {
+      // ignore stale trigger handles
+    }
+  }
   ScriptApp.newTrigger('onFormSubmit')
     .forForm(formId)
     .onFormSubmit()
